@@ -9,9 +9,13 @@ Implementation of RouteNet, an effective way for Network Modeling and Optimizati
 # Quick Start
 
 ```shell
+python process.py
 python main.py
 ```
 
 # ToDo
 
-- figure out why train epoch is slow than eval...
+- <del>figure out why train epoch is slow than eval...</del>
+- add batch in training step and speed up training...
+
+The code is baed on the [demo-RouteNet](https://github.com/knowledgedefinednetworking/demo-routenet) and [pytorch-lightning](https://github.com/PyTorchLightning/pytorch-lightning)Project

@@ -1,7 +1,6 @@
 import pytorch_lightning as pl
 import torch
 import torch.nn as nn
-from sklearn.metrics import mean_absolute_error, r2_score
 
 
 class RouteNet(pl.LightningModule):
