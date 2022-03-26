@@ -56,13 +56,13 @@ class NetDataModule(pl.LightningDataModule):
             self.eval = NetDataset(eval_list, self.label_str)
 
     def train_dataloader(self):
-        return DataLoader(self.train, batch_size=1, num_workers=12)
+        return DataLoader(self.train, batch_size=1)
     
     def val_dataloader(self):
-        return DataLoader(self.eval, batch_size=1, num_workers=12)
+        return DataLoader(self.eval, batch_size=1)
     
     def test_dataloader(self):
-        return DataLoader(self.eval, batch_size=1, num_workers=12)
+        return DataLoader(self.eval, batch_size=1)
 
 if __name__ == "__main__":
     dm = NetDataModule('./dataset/nsfnetbw', 'delay')
