@@ -15,11 +15,7 @@ class NetDataset(Dataset):
 
     def __getitem__(self, index):
         s = self.sample_list[index]
-        try:
-            y = torch.FloatTensor(s[self.label_str])
-        except:
-            print(s)
-            exit(0)
+        y = torch.FloatTensor(s[self.label_str])
         del s['delay']
         del s['jitter']
         return s, y
