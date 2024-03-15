@@ -15,9 +15,28 @@ class NetDataset(Dataset):
 
     def __getitem__(self, index):
         s = self.sample_list[index]
-        y = torch.FloatTensor(s[self.label_str])
+        try:
+            y = torch.FloatTensor(s[self.label_str])
+        except:
+            print(s)
+            exit(0)
         del s['delay']
         del s['jitter']
+        return s, y
+    
+    def __len__(self):
+        return len(self.sample_list)
+    
+
+class ValidNetDataset(Dataset):
+    def __init__(self, sample_list, label_str):
+        super().__init__()
+        self.sample_list = sample_list
+        self.label_str = label_str
+
+    def __getitem__(self, index):
+        s = self.sample_list[index]
+        y = torch.FloatTensor(s[self.label_str])
         return s, y
     
     def __len__(self):
@@ -26,8 +45,8 @@ class NetDataset(Dataset):
 class NetDataModule(pl.LightningDataModule):
     def __init__(self, data_path, label_str):
         super().__init__()
-        self.train_path = data_path + '/process/train'
-        self.eval_path = data_path + '/process/eval'
+        self.train_path = f"{data_path}/process/train"
+        self.eval_path = f"{data_path}/process/eval"
         if not label_str in ['delay', 'jitter']:
             print("[dataloader.py]: input wrong label_str. label_str should be one of [delay / jitter]")
             exit(0)
@@ -49,11 +68,11 @@ class NetDataModule(pl.LightningDataModule):
         if stage == 'fit' or stage is None:
             train_list = self.process_data(self.train_path)
             eval_list = self.process_data(self.eval_path)
-            self.train, self.eval = NetDataset(train_list, self.label_str), NetDataset(eval_list, self.label_str)
+            self.train, self.eval = NetDataset(train_list, self.label_str), ValidNetDataset(eval_list, self.label_str)
         
         if stage == 'test' or stage == 'validate':
-            eval_list = self.prepare_data(self.eval_path)
-            self.eval = NetDataset(eval_list, self.label_str)
+            eval_list = self.process_data(self.eval_path)
+            self.eval = ValidNetDataset(eval_list, self.label_str)
 
     def train_dataloader(self):
         return DataLoader(self.train, batch_size=1)
@@ -68,6 +87,6 @@ if __name__ == "__main__":
     dm = NetDataModule('./dataset/nsfnetbw', 'delay')
     dm.setup(stage='fit')
     for x, y in dm.train_dataloader():
-        print(y)
+       print(y)
     for x, y in dm.test_dataloader():
         print(y)
