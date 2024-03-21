@@ -6,25 +6,7 @@ from torch.utils.data import Dataset, DataLoader
 import pytorch_lightning as pl
 from tqdm import tqdm
 
-
 class NetDataset(Dataset):
-    def __init__(self, sample_list, label_str):
-        super().__init__()
-        self.sample_list = sample_list
-        self.label_str = label_str
-
-    def __getitem__(self, index):
-        s = self.sample_list[index]
-        y = torch.FloatTensor(s[self.label_str])
-        del s['delay']
-        del s['jitter']
-        return s, y
-    
-    def __len__(self):
-        return len(self.sample_list)
-    
-
-class ValidNetDataset(Dataset):
     def __init__(self, sample_list, label_str):
         super().__init__()
         self.sample_list = sample_list
@@ -64,11 +46,11 @@ class NetDataModule(pl.LightningDataModule):
         if stage == 'fit' or stage is None:
             train_list = self.process_data(self.train_path)
             eval_list = self.process_data(self.eval_path)
-            self.train, self.eval = NetDataset(train_list, self.label_str), ValidNetDataset(eval_list, self.label_str)
+            self.train, self.eval = NetDataset(train_list, self.label_str), NetDataset(eval_list, self.label_str)
         
         if stage == 'test' or stage == 'validate':
             eval_list = self.process_data(self.eval_path)
-            self.eval = ValidNetDataset(eval_list, self.label_str)
+            self.eval = NetDataset(eval_list, self.label_str)
 
     def train_dataloader(self):
         return DataLoader(self.train, batch_size=1)
